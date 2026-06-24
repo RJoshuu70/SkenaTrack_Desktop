@@ -28,11 +28,11 @@ public class PlaceDetailDialog extends JDialog {
     private final OnFavoriteChangedListener favoriteChangedListener;
 
     // Warna tema
-    private static final Color PURPLE      = new Color(103, 80, 164);
-    private static final Color PURPLE_LIGHT = new Color(234, 221, 255);
-    private static final Color BG          = new Color(255, 251, 254);
-    private static final Color TEXT_MAIN   = new Color(28, 27, 31);
-    private static final Color TEXT_SUB    = new Color(73, 69, 79);
+    private static final Color PURPLE      = new Color(14, 64, 45);
+    private static final Color PURPLE_LIGHT = new Color(255, 184, 76);
+    private static final Color BG          = new Color(250, 248, 245);
+    private static final Color TEXT_MAIN   = new Color(44, 62, 53);
+    private static final Color TEXT_SUB    = new Color(80, 95, 85);
 
     public PlaceDetailDialog(Frame parent, Place place, OnFavoriteChangedListener listener) {
         super(parent, place.getName(), true); // modal = true

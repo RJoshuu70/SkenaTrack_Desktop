@@ -24,10 +24,10 @@ public class PlaceCardPanel extends JPanel {
 
     // Warna — diambil dari colors.xml versi Android
     private static final Color BG_CARD    = Color.WHITE;
-    private static final Color BG_HOVER   = new Color(248, 245, 255);
-    private static final Color PURPLE     = new Color(103, 80, 164);
-    private static final Color TEXT_MAIN  = new Color(28, 27, 31);
-    private static final Color TEXT_SUB   = new Color(73, 69, 79);
+    private static final Color BG_HOVER   = new Color(240, 242, 238);
+    private static final Color PURPLE     = new Color(14, 64, 45);
+    private static final Color TEXT_MAIN  = new Color(44, 62, 53);
+    private static final Color TEXT_SUB   = new Color(80, 95, 85);
     private static final Color BORDER_CLR = new Color(230, 225, 235);
 
     public interface OnItemClickListener {

@@ -37,10 +37,10 @@ public class MainWindow extends JFrame {
     private JButton btnHome, btnAbout, btnProfile;
 
     // Warna tema light
-    private static final Color NAV_BG      = new Color(103, 80, 164);
-    private static final Color NAV_ACTIVE  = new Color(234, 221, 255);
+    private static final Color NAV_BG      = new Color(14, 64, 45);
+    private static final Color NAV_ACTIVE  = new Color(255, 184, 76);
     private static final Color NAV_TEXT    = Color.WHITE;
-    private static final Color HEADER_BG   = new Color(103, 80, 164);
+    private static final Color HEADER_BG   = new Color(14, 64, 45);
 
     public MainWindow() {
         super("SkenaTrack");
@@ -49,7 +49,8 @@ public class MainWindow extends JFrame {
         setMinimumSize(new Dimension(380, 600));
         setLocationRelativeTo(null); // tengah layar
 
-        applyDarkModeFromPrefs();
+        setLocationRelativeTo(null); // tengah layar
+        com.skenatrack.datasource.DataSource.initDatabase();
 
         buildUI();
         setVisible(true);
@@ -86,17 +87,7 @@ public class MainWindow extends JFrame {
         logo.setForeground(Color.WHITE);
         header.add(logo, BorderLayout.WEST);
 
-        // Menu settings — analog onCreateOptionsMenu
-        JButton btnSettings = new JButton("⚙️");
-        btnSettings.setBackground(HEADER_BG);
-        btnSettings.setForeground(Color.WHITE);
-        btnSettings.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        btnSettings.setBorderPainted(false);
-        btnSettings.setFocusPainted(false);
-        btnSettings.setOpaque(false);
-        btnSettings.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnSettings.addActionListener(e -> showDarkModeDialog());
-        header.add(btnSettings, BorderLayout.EAST);
+        // (Tombol settings dihapus karena dark mode tidak disupport secara rapih di Swing)
 
         return header;
     }
@@ -121,13 +112,36 @@ public class MainWindow extends JFrame {
     }
 
     private JButton makeNavButton(String label, String panelKey) {
-        JButton btn = new JButton(label);
+        JButton btn = new JButton(label) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Background utama hijau gelap
+                g2.setColor(NAV_BG);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                
+                // Jika sedang aktif, gambar bentuk kapsul (pill) di belakang teks
+                if (getBackground().equals(NAV_ACTIVE)) {
+                    g2.setColor(NAV_ACTIVE);
+                    int h = 32;
+                    int y = (getHeight() - h) / 2;
+                    int w = Math.min(100, getWidth() - 20);
+                    int x = (getWidth() - w) / 2;
+                    g2.fillRoundRect(x, y, w, h, 20, 20);
+                }
+                
+                super.paintComponent(g);
+                g2.dispose();
+            }
+        };
         btn.setForeground(NAV_TEXT);
         btn.setBackground(NAV_BG);
-        btn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        btn.setFont(new Font("SansSerif", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
-        btn.setOpaque(true);
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.addActionListener(e -> showPanel(panelKey, btn));
         return btn;
@@ -144,67 +158,10 @@ public class MainWindow extends JFrame {
 
         // Highlight active
         activeBtn.setBackground(NAV_ACTIVE);
-        activeBtn.setForeground(new Color(60, 20, 120));
+        activeBtn.setForeground(new Color(14, 64, 45));
     }
 
-    // -----------------------------------------------------------------------
-    // Dark Mode — analog showDarkModeDialog() di MainActivity
-    // -----------------------------------------------------------------------
-
-    private void showDarkModeDialog() {
-        Preferences prefs    = Preferences.userRoot().node(PREFS_NODE);
-        boolean     isDark   = prefs.getBoolean(KEY_DARK, false);
-
-        JCheckBox cbDark = new JCheckBox("Dark Mode", isDark);
-        cbDark.setFont(new Font("SansSerif", Font.PLAIN, 13));
-
-        int result = JOptionPane.showConfirmDialog(
-            this, cbDark, "Pengaturan",
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (result == JOptionPane.OK_OPTION) {
-            prefs.putBoolean(KEY_DARK, cbDark.isSelected());
-            applyLookAndFeel(cbDark.isSelected());
-            // Restart diperlukan agar full effect karena Swing tidak support
-            // hot-reload theme di semua komponen tanpa rebuild
-            JOptionPane.showMessageDialog(this,
-                "Dark mode " + (cbDark.isSelected() ? "aktif" : "nonaktif") +
-                ".\nAplikasi perlu di-restart untuk efek penuh.",
-                "Info", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void applyDarkModeFromPrefs() {
-        Preferences prefs  = Preferences.userRoot().node(PREFS_NODE);
-        boolean     isDark = prefs.getBoolean(KEY_DARK, false);
-        applyLookAndFeel(isDark);
-    }
-
-    private void applyLookAndFeel(boolean dark) {
-        try {
-            if (dark) {
-                // Nimbus dark — bawaan JDK, tidak perlu library
-                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                    if ("Nimbus".equals(info.getName())) {
-                        UIManager.setLookAndFeel(info.getClassName());
-                        UIManager.put("control", new Color(60, 63, 65));
-                        UIManager.put("info", new Color(60, 63, 65));
-                        UIManager.put("nimbusBase", new Color(18, 30, 49));
-                        UIManager.put("nimbusBlueGrey", new Color(80, 80, 80));
-                        UIManager.put("nimbusFocus", new Color(115, 164, 209));
-                        UIManager.put("text", Color.WHITE);
-                        break;
-                    }
-                }
-            } else {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
-        } catch (Exception e) {
-            // Fallback ke default jika gagal — aplikasi tetap jalan
-        }
-    }
+    // Fitur Dark Mode sudah dihapus karena tidak compatible dengan komponen Swing kustom
 
     // -----------------------------------------------------------------------
     // Entry Point

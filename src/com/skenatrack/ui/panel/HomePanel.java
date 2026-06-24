@@ -35,11 +35,11 @@ public class HomePanel extends JPanel {
     private Timer   debounceTimer; // pengganti Handler.postDelayed
 
     // Warna tema
-    private static final Color PURPLE      = new Color(103, 80, 164);
-    private static final Color PURPLE_LIGHT = new Color(234, 221, 255);
-    private static final Color BG          = new Color(255, 251, 254);
-    private static final Color BG_PANEL    = new Color(247, 242, 255);
-    private static final Color TEXT_SUB    = new Color(73, 69, 79);
+    private static final Color PURPLE      = new Color(14, 64, 45);
+    private static final Color PURPLE_LIGHT = new Color(255, 184, 76);
+    private static final Color BG          = new Color(250, 248, 245);
+    private static final Color BG_PANEL    = new Color(245, 242, 238);
+    private static final Color TEXT_SUB    = new Color(80, 95, 85);
 
     public HomePanel() {
         setLayout(new BorderLayout(0, 0));
@@ -62,12 +62,29 @@ public class HomePanel extends JPanel {
         top.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
 
         // Search field
-        JTextField searchField = new JTextField();
+        JTextField searchField = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                super.paintComponent(g);
+                g2.dispose();
+            }
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(200, 190, 220));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                g2.dispose();
+            }
+        };
+        searchField.setOpaque(false);
         searchField.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        searchField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 190, 220), 1),
-            BorderFactory.createEmptyBorder(6, 10, 6, 10)
-        ));
+        searchField.setForeground(Color.DARK_GRAY);
+        searchField.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
         searchField.putClientProperty("JTextField.placeholderText", "Cari tempat...");
 
         // Debounce via Swing Timer (analog Handler.postDelayed 2000ms)
@@ -87,13 +104,24 @@ public class HomePanel extends JPanel {
         });
 
         // Sort button + popup menu
-        JButton btnSort = new JButton("⇅ Sort");
+        JButton btnSort = new JButton("⇅ Sort") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                super.paintComponent(g);
+                g2.dispose();
+            }
+        };
         btnSort.setBackground(PURPLE);
         btnSort.setForeground(Color.WHITE);
         btnSort.setFont(new Font("SansSerif", Font.BOLD, 12));
         btnSort.setFocusPainted(false);
         btnSort.setBorderPainted(false);
-        btnSort.setOpaque(true);
+        btnSort.setOpaque(false);
+        btnSort.setContentAreaFilled(false);
         btnSort.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         JPopupMenu sortMenu = new JPopupMenu();
@@ -111,11 +139,17 @@ public class HomePanel extends JPanel {
 
         // Panel filter chips (kategori) — di bawah search bar
         JPanel chips = buildCategoryChips();
+        JScrollPane chipsScroll = new JScrollPane(chips);
+        chipsScroll.setBorder(BorderFactory.createEmptyBorder());
+        chipsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        chipsScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        // Sembunyikan scrollbar UI agar mirip Android horizontal scroll
+        chipsScroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
 
         JPanel wrapper = new JPanel(new BorderLayout(0, 0));
         wrapper.setBackground(BG_PANEL);
         wrapper.add(top,   BorderLayout.NORTH);
-        wrapper.add(chips, BorderLayout.SOUTH);
+        wrapper.add(chipsScroll, BorderLayout.SOUTH);
         return wrapper;
     }
 
@@ -143,14 +177,34 @@ public class HomePanel extends JPanel {
 
     private void addChip(JPanel parent, ButtonGroup group,
                          String label, String categoryValue, boolean selected) {
-        JToggleButton chip = new JToggleButton(label, selected);
+        JToggleButton chip = new JToggleButton(label, selected) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                super.paintComponent(g);
+                g2.dispose();
+            }
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (isSelected()) g2.setColor(PURPLE);
+                else g2.setColor(new Color(200, 190, 220));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                g2.dispose();
+            }
+        };
         chip.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        chip.setContentAreaFilled(false);
         chip.setFocusPainted(false);
         chip.setBorderPainted(false);
-        chip.setOpaque(true);
+        chip.setOpaque(false);
         chip.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         chip.setPreferredSize(new Dimension(
-            chip.getPreferredSize().width + 16, 28
+            chip.getPreferredSize().width + 24, 30
         ));
 
         // Warna dinamis selected/unselected — analog ColorStateList chip
