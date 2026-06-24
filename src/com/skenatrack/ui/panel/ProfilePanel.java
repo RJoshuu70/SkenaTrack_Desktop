@@ -13,10 +13,10 @@ import java.awt.*;
  */
 public class ProfilePanel extends JPanel {
 
-    private static final Color BG       = new Color(255, 251, 254);
-    private static final Color PURPLE   = new Color(103, 80, 164);
-    private static final Color TEXT_MAIN = new Color(28, 27, 31);
-    private static final Color TEXT_SUB  = new Color(73, 69, 79);
+    private static final Color BG       = new Color(250, 248, 245);
+    private static final Color PURPLE   = new Color(14, 64, 45);
+    private static final Color TEXT_MAIN = new Color(44, 62, 53);
+    private static final Color TEXT_SUB  = new Color(80, 95, 85);
 
     public ProfilePanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
